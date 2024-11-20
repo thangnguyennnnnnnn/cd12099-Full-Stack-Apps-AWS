@@ -1,5 +1,5 @@
 import fs from "fs";
-import Jimp from "jimp";
+import {Jimp as Jimp} from "jimp";
 
 
 // filterImageFromURL
@@ -14,14 +14,13 @@ import Jimp from "jimp";
     try {
       const photo = await Jimp.read(inputURL);
       const outpath =
-        "/tmp/filtered." + Math.floor(Math.random() * 2000) + ".jpg";
-      await photo
-        .resize(256, 256) // resize
-        .quality(60) // set JPEG quality
-        .greyscale() // set greyscale
-        .write(outpath, (img) => {
-          resolve(outpath);
-        });
+        "tmp/filtered." + Math.floor(Math.random() * 2000) + ".jpg";
+      await photo.resize({w: 256,h: 256})
+      //await photo.quality(60); // set JPEG quality
+      .greyscale() // set greyscale
+      .write(outpath);
+      console.log("Saved: " + outpath); 
+      resolve(outpath);
     } catch (error) {
       reject(error);
     }

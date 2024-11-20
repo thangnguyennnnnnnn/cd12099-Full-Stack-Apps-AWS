@@ -30,11 +30,37 @@ import {filterImageFromURL, deleteLocalFiles} from './util/util.js';
     /**************************************************************************** */
 
   //! END @TODO1
+  app.get('/filteredimage', async (req, res) => {
+    try {
+      // 1. Validate the image_url query parameter.
+      const { image_url } = req.query;
+      if (!image_url) {
+        return res.status(422).send({ message: 'image_url is required' });
+      }
+  
+      // 2. Call filterImageFromURL to filter the image.
+      const filteredPath = await filterImageFromURL(image_url);
+      // 3. Send the processed image file in the response.
+      res.sendFile(filteredPath, {}, (err) => {
+        if (err) {
+          console.error('Error sending file:', err);
+          res.status(500).send('Error sending file.');
+        } else {
+          console.log('File sent successfully!');
+          // 4. Delete the image file after the response is sent.
+          deleteLocalFiles([filteredPath]);
+        }
+      });
+    } catch (error) {
+      console.error('Error:', error);
+      res.status(422).send({ message: 'An error occurred while processing the image.' });
+    }
+  });
   
   // Root Endpoint
   // Displays a simple message to the user
   app.get( "/", async (req, res) => {
-    res.send("try GET /filteredimage?image_url={{}}")
+    res.send("try GET /filteredimage?image_url=https://upload.wikimedia.org/wikipedia/commons/b/bd/Golden_tabby_and_white_kitten_n01.jpg")
   } );
   
 
